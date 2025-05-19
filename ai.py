@@ -1,9 +1,3 @@
-d1, d2 = str(input('Dealer hand:')).split()
-
-y1, y2 = str(input('Your hand:')).split()
-
-t = game(d1, d2, y1, y2)
-
 def game(d1, d2, y1, y2):
     cards = Deck()
     dealer = [d1, d2]
@@ -41,3 +35,12 @@ class Deck():
         for i in suits:
             for a in rank:
                 self.all_cards.append((i,a))
+
+
+
+d1, d2 = str(input('Dealer hand:')).split()
+
+y1, y2 = str(input('Your hand:')).split()
+
+t = game(d1, d2, y1, y2)
+print(t)
