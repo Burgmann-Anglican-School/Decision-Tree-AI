@@ -41,4 +41,8 @@ class DecisionTree:
         plots.figure(figsize=(0, 21))
         plots.plot_tree(self.model, values = ['total_you', 'dealer_initial', 'risk'], names=self.model.classes, filled=True)
         plots.show() 
-
+    
+    def case_tests(self, inputs):
+        for i in inputs:
+            decide = self.guess_new_card(i['risk'], i['you_total'], i['dealer_initial'])
+            print(decide)
