@@ -6,12 +6,12 @@ def activity(d1, d2, y1, y2):
     total.calculations()
     total.calculations_dealer()
     while True:
+        print(total.hit_stand(), total.display())
         total.new_card()
         total.remove_card()
         total.calculations()
         total.calculations_dealer()
         if total.bust() == 'You lost':
-            return ('You lost')
             break
     return total
 
@@ -41,6 +41,18 @@ class Game:
         self.all_cards[self.y2] -= 1
         self.all_cards[self.d1] -= 1
         self.all_cards[self.d2] -= 1
+    def hit_stand(self):
+        if self.total_you >= 17:
+            return 'Stand'
+        elif self.total_you <= 11:
+            return 'Hit'
+        elif self.total_dealer >= 7:
+            return 'Hit'
+        else:
+            return 'Hit'
+        
+    def display_hand(self):
+        print(self.hand)
     def calculations_dealer(self):
         for card in self.dealer:
             try:
