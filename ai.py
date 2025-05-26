@@ -5,6 +5,14 @@ def activity(d1, d2, y1, y2):
     total.remove_card()
     total.calculations()
     total.calculations_dealer()
+    while True:
+        total.new_card()
+        total.remove_card()
+        total.calculations()
+        total.calculations_dealer()
+        if total.bust() == 'You lost':
+            return ('You lost')
+            break
     return total
 
 def reset():
@@ -79,7 +87,12 @@ class Game:
             self.total_you -= 10
     def __str__(self):
         return(str(self.total_you))
-
+    def new_card(self):
+        new_card = str(input('Enter new card: '))
+        self.hand.append(new_card)
+    def bust(self):
+        if self.total_you > 21:
+            return 'You lost'
 
 tf = True
 while tf:
