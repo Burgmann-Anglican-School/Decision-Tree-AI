@@ -1,6 +1,5 @@
 from sklearn.tree import DecisionTreeClassifier
 import pandas as panda
-import Data_Sets
 import matplotlib.pyplot as plots
 
 class DecisionTree:
@@ -9,6 +8,19 @@ class DecisionTree:
         self.visual = None
         self.criterion = 'entropy'
         self.max_depth = 4
+        self.data_sets = {'you_total':list(range(8,22))*3, 'dealer': list(range(2,12))*4+[2,3], 'risk':[0, 1, 2]*14, 'future_choices':[]}
+    for i in range(len(data_sets['you_total'])):
+        you_val = data_sets['you_total'][i]
+        dealer_val = data_sets['dealer'][i]
+        if you_val <= 10:
+            data_sets['future_choices'].append('hit')
+        if you_val >= 18:
+            data_sets['future_choices'].append('stand')
+        else:
+            if dealer_val >= 7:
+                data_sets['future_choices'].append('hit')
+            else:
+                data_sets['future_choices'].append('stand')
 
     def train(self):
         x_coordinate = self.visual[['you_total', 'dealer_initial', 'risk']]
@@ -20,9 +32,9 @@ class DecisionTree:
         return self.model.predict([[you, dealer, risk]])
 
     def decisions(self):
-        for i in range(len(Data_Sets.data_sets['you_total'])):
+        for i in range(len(data_sets['you_total'])):
             #risk = Data_Sets.data_sets['risk'][i]
-            total_you = Data_Sets.data_sets['you_total'][i] 
+            total_you = data_sets['you_total'][i] 
             dealer_inital = Data_Sets.data_sets['dealer'][i]
 
             if total_you >= 18: 
@@ -46,6 +58,7 @@ class DecisionTree:
         for i in inputs:
             decide = self.guess_new_card(i['risk'], i['you_total'], i['dealer_initial'])
             print(decide)
+
 
 
 
