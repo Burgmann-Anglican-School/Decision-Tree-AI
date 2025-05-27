@@ -1,6 +1,8 @@
 from sklearn.tree import DecisionTreeClassifier
 import pandas as panda
 import matplotlib.pyplot as plots
+from sklearn.tree import plot_tree
+import numpy as num
 
 class DecisionTree:
     def __init__(self):
@@ -8,23 +10,27 @@ class DecisionTree:
         self.visual = None
         self.criterion = 'entropy'
         self.max_depth = 4
-        self.data_sets = {'you_total':list(range(8,22))*3, 'dealer': list(range(2,12))*4+[2,3], 'risk':[0, 1, 2]*14, 'future_choices':[]}
-    for i in range(len(data_sets['you_total'])):
-        you_val = data_sets['you_total'][i]
-        dealer_val = data_sets['dealer'][i]
-        if you_val <= 10:
-            data_sets['future_choices'].append('hit')
-        if you_val >= 18:
-            data_sets['future_choices'].append('stand')
-        else:
-            if dealer_val >= 7:
+        list_dealer = list(range(2, 12))*4
+        list_dealer.append(2)
+        list_dealer.append(3)
+        print(len(list_dealer))
+        data_sets = {'you_total':list(range(8,22))*3, 'dealer_initial': list_dealer, 'risk':(list(range(0, 3)))*14, 'future_choices':[]}
+        for i in range(len(data_sets['you_total'])):
+            you_val = data_sets['you_total'][i]
+            dealer_val = data_sets['dealer_initial'][i]
+            if you_val <= 10:
+                data_sets['future_choices'].append('hit')
+            elif you_val >= 18:
+                data_sets['future_choices'].append('stand')
+            elif 17 >= you_val >= 11 and dealer_val >= 7:
                 data_sets['future_choices'].append('hit')
             else:
                 data_sets['future_choices'].append('stand')
-
+        print(data_sets['future_choices'])
+        self.data_sets = data_sets
     def train(self):
         x_coordinate = self.visual[['you_total', 'dealer_initial', 'risk']]
-        y_coordinate = self.visual['future_choices']
+        y_coordinate = self.visual[['future_choices']]
         self.model = DecisionTreeClassifier(criterion='entropy', max_depth=self.max_depth)
         self.model.fit(x_coordinate, y_coordinate)
     
@@ -32,26 +38,11 @@ class DecisionTree:
         return self.model.predict([[you, dealer, risk]])
 
     def decisions(self):
-        for i in range(len(data_sets['you_total'])):
-            #risk = Data_Sets.data_sets['risk'][i]
-            total_you = data_sets['you_total'][i] 
-            dealer_inital = Data_Sets.data_sets['dealer'][i]
-
-            if total_you >= 18: 
-               Data_Sets.data_sets['future_choices'].append('stand')
-            if total_you <= 11:
-                Data_Sets.data_sets['future_choices'].append('hit')
-            if 17 >= total_you >= 12 and dealer_inital >= 7:
-                Data_Sets.data_sets['future_choices'].append('hit')
-            if 17 >= total_you >= 12 and dealer_inital <= 7:
-                Data_Sets.data_sets['future_choices'].append('stand')
-            else:
-                Data_Sets.data_sets['future_choices'].append('hit')
-        self.visual= panda.DataFrame(Data_Sets.data_sets)
+        self.visual= panda.DataFrame(self.data_sets)
 
     def visual_demonstration(self):
         plots.figure(figsize=(10, 21))
-        plots.plot_tree(self.model, feature_names = ['you_total', 'dealer_initial', 'risk'], class_names=self.model.classes, filled=True)
+        plot_tree(self.model, feature_names = ['you_total', 'dealer_initial', 'risk'], class_names=self.model.classes_, filled=True)
         plots.show() 
     
     def case_tests(self, inputs):
