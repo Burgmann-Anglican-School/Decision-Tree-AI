@@ -1,0 +1,1 @@
+print(list(range(8,22)))
