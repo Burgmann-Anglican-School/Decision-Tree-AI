@@ -2,6 +2,7 @@ from sklearn.tree import DecisionTreeClassifier #https://www.datacamp.com/tutori
 import pandas as panda #https://www.datacamp.com/tutorial/decision-tree-classification-python
 import matplotlib.pyplot as plots #https://matplotlib.org/3.5.3/api/_as_gen/matplotlib.pyplot.html
 from sklearn.tree import plot_tree #https://scikit-learn.org/stable/modules/generated/sklearn.tree.plot_tree.html
+#This imports a large amount of libraries to be utilised for the decision tree model, to create the tree and for visulisation
 
 class Cards: #This is a class to instantiate the total of the cards from the user the dealer and the total amount of cards that exist to show my understanding of classes
     def __init__(self, new_card, dealer_card): #This is an initialiser method to set up initial values for the class
@@ -47,10 +48,10 @@ class Cards: #This is a class to instantiate the total of the cards from the use
 
 
 class DecisionTree: #This is a class to create the decision tree model for blackjack to predict future moves
-    def __init__(self):
+    def __init__(self): #Initialises the class for the initial values to set up the decision tree
         self.model = None
         self.visual = None
-        self.criterion = 'entropy'
+        self.criterion = 'entropy' #This is a creteria to determine the best split of the decision tree to be assessed
         self.max_depth = 4  
         list_dealer = list(range(2, 12))*4
         list_dealer.append(2)
@@ -68,29 +69,29 @@ class DecisionTree: #This is a class to create the decision tree model for black
             else:
                 data_sets['future_choices'].append('stand') #This is a decision model to determine which is the best move for each scenario which is then stored in the future moves based upon the input from the user
         self.data_sets = data_sets
-    def train(self):
-        x_coordinate = self.visual[['you_total', 'dealer_initial', 'risk']]
-        y_coordinate = self.visual[['future_choices']]
-        self.model = DecisionTreeClassifier(criterion='entropy', max_depth=self.max_depth) #
-        self.model.fit(x_coordinate, y_coordinate)
+    def train(self): 
+        x_coordinate = self.visual[['you_total', 'dealer_initial', 'risk']] #Handles the inputs from the user which is the independent variables which is then utilised to be compared for the dependent variable
+        y_coordinate = self.visual[['future_choices']] #Dependent variable which the model determines what value will be given here
+        self.model = DecisionTreeClassifier(criterion='entropy', max_depth=self.max_depth) #Utilised for decision trees to determine if the model is in a good split based upon entropy, and ensuring that data is not overfit by setting the max depth
+        self.model.fit(x_coordinate, y_coordinate)  #Trains the model for the x and y coordinates for the inputs
     
-    def guess_new_card(self, risk, you, dealer):
+    def guess_new_card(self, risk, you, dealer): #This is a method which calls another function to predict the move based upon the current model
         return self.model.predict([[you, dealer, risk]])
 
-    def decisions(self):
-        self.visual= panda.DataFrame(self.data_sets)
+    def decisions(self): 
+        self.visual= panda.DataFrame(self.data_sets) #Inteprets a dictionary to be better understood and visualised by the DataFrame function
 
-    def visual_demonstration(self):
-        plots.figure(figsize=(10, 21))
-        plot_tree(self.model, feature_names = ['you_total', 'dealer_initial', 'risk'], class_names=self.model.classes_, filled=True)
-        plots.show() 
+    def visual_demonstration(self): #This will manage what visually the data will look like for the decision tree creation
+        plots.figure(figsize=(10, 21)) #This will plot out the decision tree in a certain size from 10 to 21
+        plot_tree(self.model, feature_names = ['you_total', 'dealer_initial', 'risk'], class_names=self.model.classes_, filled=True) #This will plot out the tree based upon the different dictionary values, including names which will be included and entropy
+        plots.show()  #This will draw the plot on an application to be read for the user
     
-    def case_tests(self, inputs):
+    def case_tests(self, inputs): #This is a method where the user provides an input to then input into the model to predict future moves
         for i in inputs:
             decide = self.guess_new_card(i['risk'], i['you_total'], i['dealer_initial'])
-            return decide
+            return decide #New stand or hit will be provided based upon success in blackjack
 
-def reset():
+def reset(): #This is a function to determine if the user wants to reset the game or not
     while True:
         play_again = str(input('Would you like to stop playing? (y/n) ')).lower()
         if play_again == 'y':
@@ -111,10 +112,10 @@ def stand_hit_decide():
             print('Invalid input')
 
 
-modelling = DecisionTree()
+modelling = DecisionTree() #This creates an instance of this class
 modelling.decisions()
 modelling.train()
-modelling.visual_demonstration()
+modelling.visual_demonstration() #This is the accessing and utilisation of the class for the modelling
 
 aces = 0
 your_initial = str(input('Your initial card 1(Consider, K, Q, J as 10, and A as 11): '))
@@ -157,3 +158,5 @@ while tf:
                 tf = reset()
     else:
         continue
+
+#All the above code is an algorithm to manage a game of black jack based upon the inputs from the user to determine whether to play or not
