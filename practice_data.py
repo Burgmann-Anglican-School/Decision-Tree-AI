@@ -1,15 +1,41 @@
-from sklearn.tree import DecisionTreeClassifier
-import pandas as panda
-import matplotlib.pyplot as plots
-from sklearn.tree import plot_tree
-import numpy as num
+from sklearn.tree import DecisionTreeClassifier #https://www.datacamp.com/tutorial/decision-tree-classification-python
+import pandas as panda #https://www.datacamp.com/tutorial/decision-tree-classification-python
+import matplotlib.pyplot as plots #https://matplotlib.org/3.5.3/api/_as_gen/matplotlib.pyplot.html
+from sklearn.tree import plot_tree #https://scikit-learn.org/stable/modules/generated/sklearn.tree.plot_tree.html
+
+class Cards:
+    def __init__(self, new_card, dealer_card):
+        self.total = 0
+        self.you_cards = []
+        self.dealer_cards = []
+        self.new_card = new_card
+        self.dealer_card = dealer_card
+        self.aces = 0
+    def add_card(self):
+        self.you_cards.append(str(self.new_card))
+        if self.new_card == ('K' or 'Q' or 'J'):
+            self.total += 10
+        elif self.new_card == 'A':
+            if (self.total + 11) >= 21:
+                self.total += 1
+            else:
+                self.total += 11
+                self.aces += 1
+        elif self.total > 21 and self.aces > 0:
+            self.total -= 10
+            self.aces -= 1 
+        elif self.total > 21 and self.aces == 0:
+            return False
+        return self.total
+
+
 
 class DecisionTree:
     def __init__(self):
         self.model = None
         self.visual = None
         self.criterion = 'entropy'
-        self.max_depth = 4
+        self.max_depth = 4  
         list_dealer = list(range(2, 12))*4
         list_dealer.append(2)
         list_dealer.append(3)
@@ -29,7 +55,7 @@ class DecisionTree:
     def train(self):
         x_coordinate = self.visual[['you_total', 'dealer_initial', 'risk']]
         y_coordinate = self.visual[['future_choices']]
-        self.model = DecisionTreeClassifier(criterion='entropy', max_depth=self.max_depth)
+        self.model = DecisionTreeClassifier(criterion='entropy', max_depth=self.max_depth) #
         self.model.fit(x_coordinate, y_coordinate)
     
     def guess_new_card(self, risk, you, dealer):
