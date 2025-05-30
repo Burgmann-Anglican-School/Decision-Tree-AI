@@ -19,9 +19,10 @@ class User_Inputs(Cards): #This is a child class of cards, which inherits the in
     def __init__(self, new_card, dealer_initial):
         super().__init__(new_card, None)
         self.you_cards = []
-    def add_card_you(self): #This is a method which adds the new card for the total of the user to be returned
+    def add_card_you(self, new_card): #This is a method which adds the new card for the total of the user to be returned
+        self.new_card = new_card
         self.you_cards.append(str(self.new_card))
-        if self.new_card in ('K' or 'Q' or 'J'):
+        if self.new_card == 'K' or self.new_card == 'Q' or self.new_card == 'J':
             self.total += 10
         elif self.new_card == 'A':
             self.total += 11
@@ -35,23 +36,24 @@ class User_Inputs(Cards): #This is a child class of cards, which inherits the in
         return self.total
     def return_cards(self): #This is a method to return the list back to the user
         return self.you_cards
-class Dealer_Inputs(Cards):
+class Dealer_Inputs(Cards): #This is another child class which manages the dealers inputs for their results
     def __init__(self, you_initial, dealer_cards):
-        super().__init__(None, dealer_cards)
+        super().__init__(None, dealer_cards) #This accesses the parent class method which is labelled, in this scenario it is the initialiser method which then replaces the values which exist in the main initialiser and provides access to the parent attributes
         self.dealer_cards = []
-    def add_card_dealer(self): #Another method but adds total for the dealer
+    def add_card_dealer(self, dealer_card): #Another method but adds total for the dealer
+        self.dealer_card = dealer_card
         self.dealer_cards.append(str(self.dealer_card)) #Adds the new card to the list of all the dealer's cards which exist
-        if self.dealer_card.upper() == ('K' or 'Q' or 'J'):
+        if self.dealer_card == 'K' or self.dealer_card == 'Q' or self.dealer_card == 'J':
             self.dealer_total += 10
-        elif self.dealer_card.upper() == 'A':
-            if (self.dealer_total + 11) >= 21:
-                self.dealer_total += 1
-            else:
-                self.dealer_total += 11
-                self.dealer_aces += 1
+        elif self.dealer_card == 'A':
+            self.dealer_total += 11
+            self.dealer_aces += 1
+        elif self.dealer_card in ('2', '3', '4', '5', '6', '7', '8', '9'):
+            self.dealer_total += int(self.dealer_card)
+        
         while self.dealer_total > 21 and self.dealer_aces > 0:
             self.dealer_total -= 10
-            self.dealer_aces -= 1
+            self.dealer_aces -= 1 
         return self.dealer_total
     def return_cards(self): #This is a method to return the list back to the user
         return self.dealer_cards
@@ -111,7 +113,7 @@ def reset(): #This is a function to determine if the user wants to reset the gam
         else:
             print('Invalid input')
 
-def stand_hit_decide():
+def stand_hit_decide(): #This is a function which determines whether or not you would like a new card or not and allow for decisions to be made accordingly
     while True:
         decide = str(input('Do you want to stand or hit? (s(stand), h(hit)) '))
         if decide.lower() == 's':
@@ -125,39 +127,41 @@ def stand_hit_decide():
 modelling = DecisionTree() #This creates an instance of this class
 modelling.decisions()
 modelling.train()
-modelling.visual_demonstration() #This is the accessing and utilisation of the class for the modelling
+modelling.visual_demonstration() #This is the accessing and utilisation of the class for the modelling from the specific methods which is then utilised later to open up the methods to test values for
 
 your_initial = str(input('Your initial card 1(Consider, K, Q, J as 10, and A as 11): '))
 dealer_initial = str(input('Dealer initial card 1: '))
 user = User_Inputs(your_initial, dealer_initial)
 dealer = Dealer_Inputs(your_initial, dealer_initial)
 
-your_total = user.add_card_you()
+your_total = user.add_card_you(your_initial)
 all_cards = user.return_cards()
 print(all_cards, your_total)
-dealer_total = dealer.add_card_dealer()
+dealer_total = dealer.add_card_dealer(dealer_initial)
 dealer_cards = dealer.return_cards()
-print(dealer_total, dealer_cards)
+print(dealer_cards, dealer_total)
 your_initial = str(input('Your initial card 2(Consider, K, Q, J as 10, and A as 11): '))
 dealer_initial = str(input('Dealer initial card 2: '))
-your_total = User_Inputs(your_initial, dealer_initial).add_card_you()
-dealer_total = Dealer_Inputs(your_initial, dealer_initial).add_card_dealer()
+your_total = user.add_card_you(your_initial)
+all_cards = user.return_cards()
+dealer_total = dealer.add_card_dealer(dealer_initial)
+print(your_total, all_cards)
 risk = int(input('Risk (0, 1, 2): '))
 print(modelling.case_tests([{'you_total': your_total, 'dealer_initial': dealer_initial, 'risk': risk}]))
 tf = True
 while tf:
     your_initial = str(input('Your new card(Consider K, Q, J, A): '))
-    your_initial = user.add_card_you()
+    your_total = user.add_card_you(your_initial)
     all_cards = user.return_cards()
     print(all_cards, your_total)
     if your_total == 21:
         print('You won')
         print(all_cards)
-    if your_total == False:
+    if your_total > 21:
         print('You lost')
         break    
     risk = int(input('Risk (0, 1, 2): '))
-    stand_hit = modelling.case_tests([{'you_total': your_total, 'dealer_initial': dealer_initial, 'risk': risk}])
+    stand_hit = modelling.case_tests([{'you_total': your_total, 'dealer_initial': dealer_initial, 'risk': risk}]) #This accesses the instance of the class 'modelling' and then inputs specific inputs from the dictionary to then be inputted which is then accessed to determine the best output whether to hit or stand
     print(stand_hit)
     if 'stand' in stand_hit:
         decide = stand_hit_decide()
@@ -174,7 +178,7 @@ while tf:
                 else:
                     print('You lost')
                     print(all_cards)
-                tf = reset()
+                tf = reset() #This function allows you to decide whether or not you would like to keep playing
     else:
         continue
 
