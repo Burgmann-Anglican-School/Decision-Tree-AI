@@ -28,11 +28,10 @@ class User_Inputs(Cards): #This is a child class of cards, which inherits the in
             self.aces += 1
         elif self.new_card in ('2', '3', '4', '5', '6', '7', '8', '9'):
             self.total += int(self.new_card)
-        elif self.total > 21 and self.aces > 0:
+        
+        while self.total > 21 and self.aces > 0:
             self.total -= 10
             self.aces -= 1 
-        elif self.total > 21 and self.aces == 0: #Different conditions to determine what to do with the different totals of the cards
-            return False
         return self.total
     def return_cards(self): #This is a method to return the list back to the user
         return self.you_cards
@@ -50,11 +49,9 @@ class Dealer_Inputs(Cards):
             else:
                 self.dealer_total += 11
                 self.dealer_aces += 1
-        elif self.dealer_total > 21 and self.dealer_aces > 0:
+        while self.dealer_total > 21 and self.dealer_aces > 0:
             self.dealer_total -= 10
-            self.dealer_aces -= 1 
-        elif self.dealer_total > 21 and self.dealer_aces == 0:
-            return False
+            self.dealer_aces -= 1
         return self.dealer_total
     def return_cards(self): #This is a method to return the list back to the user
         return self.dealer_cards
