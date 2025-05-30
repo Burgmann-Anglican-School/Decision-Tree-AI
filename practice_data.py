@@ -5,22 +5,23 @@ from sklearn.tree import plot_tree #https://scikit-learn.org/stable/modules/gene
 #This imports a large amount of libraries to be utilised for the decision tree model, to create the tree and for visulisation
 
 class Cards: #This is an abstract class to instantiate the total of the cards from the user the dealer and the total amount of cards that exist to show my understanding of classes which is then inherited by the input_user and dealer_input classes
-    def __init__(self, new_card=None, dealer_card=None, total = 0): #This is an initialiser method to set up initial values for the class
-        self.total = total
+    def __init__(self, new_card, dealer_card): #This is an initialiser method to set up initial values for the class
+        self.total = 0
         self.dealer_total = 0
-        self.new_card = new_card
-        self.dealer_card = dealer_card
         self.aces = 0
         self.dealer_aces = 0
+        if new_card != None:
+            self.new_card = new_card
+        if dealer_card != None:
+            self.dealer_card = dealer_card
 
 class User_Inputs(Cards): #This is a child class of cards, which inherits the initial values like new_card, dealer_card, and total from the original class
-    def __init__(self, new_card, dealer_card, total = 0):
-        super().__init(new_card, dealer_card, total)
-        self.you_cards = []  
-        self.aces = 0 
+    def __init__(self, new_card, dealer_initial):
+        super().__init__(new_card, None)
+        self.you_cards = []
     def add_card_you(self): #This is a method which adds the new card for the total of the user to be returned
-        self.you_cards.append(str(self.new_card)) 
-        if self.new_card == ('K' or 'Q' or 'J'):
+        self.you_cards.append(str(self.new_card))
+        if self.new_card in ('K' or 'Q' or 'J'):
             self.total += 10
         elif self.new_card == 'A':
             self.total += 11
@@ -36,10 +37,9 @@ class User_Inputs(Cards): #This is a child class of cards, which inherits the in
     def return_cards(self): #This is a method to return the list back to the user
         return self.you_cards
 class Dealer_Inputs(Cards):
-    def __init__(self, new_card, dealer_card, total = 0):
-        super().__init(new_card, dealer_card, total)
-        self.dealer_cards = [] 
-        self.dealer_aces = 0
+    def __init__(self, you_initial, dealer_cards):
+        super().__init__(None, dealer_cards)
+        self.dealer_cards = []
     def add_card_dealer(self): #Another method but adds total for the dealer
         self.dealer_cards.append(str(self.dealer_card)) #Adds the new card to the list of all the dealer's cards which exist
         if self.dealer_card.upper() == ('K' or 'Q' or 'J'):
@@ -130,24 +130,28 @@ modelling.decisions()
 modelling.train()
 modelling.visual_demonstration() #This is the accessing and utilisation of the class for the modelling
 
-
-aces = 0
 your_initial = str(input('Your initial card 1(Consider, K, Q, J as 10, and A as 11): '))
 dealer_initial = str(input('Dealer initial card 1: '))
-vals = Cards(your_initial, dealer_initial)
-your_total = User_Inputs.add_card_you(your_initial)
-dealer_total = Dealer_Inputs.add_card_dealer()
+user = User_Inputs(your_initial, dealer_initial)
+dealer = Dealer_Inputs(your_initial, dealer_initial)
+
+your_total = user.add_card_you()
+all_cards = user.return_cards()
+print(all_cards, your_total)
+dealer_total = dealer.add_card_dealer()
+dealer_cards = dealer.return_cards()
+print(dealer_total, dealer_cards)
 your_initial = str(input('Your initial card 2(Consider, K, Q, J as 10, and A as 11): '))
 dealer_initial = str(input('Dealer initial card 2: '))
-your_total = User_Inputs.add_card_you(your_initial)
-dealer_total = Dealer_Inputs.add_card_dealer()
+your_total = User_Inputs(your_initial, dealer_initial).add_card_you()
+dealer_total = Dealer_Inputs(your_initial, dealer_initial).add_card_dealer()
 risk = int(input('Risk (0, 1, 2): '))
 print(modelling.case_tests([{'you_total': your_total, 'dealer_initial': dealer_initial, 'risk': risk}]))
 tf = True
 while tf:
-    add_total = str(input('Your new card(Consider K, Q, J, A): '))
-    your_total = User_Inputs.add_card_you(your_initial)
-    all_cards = User_Inputs.return_cards()
+    your_initial = str(input('Your new card(Consider K, Q, J, A): '))
+    your_initial = user.add_card_you()
+    all_cards = user.return_cards()
     print(all_cards, your_total)
     if your_total == 21:
         print('You won')
