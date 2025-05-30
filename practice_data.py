@@ -14,13 +14,16 @@ class Cards: #This is a class to instantiate the total of the cards from the use
         self.dealer_card = dealer_card
         self.aces = 0
         self.dealer_aces = 0
-    def add_card_you(self): #This is a method which adds the new card for the total of the user to be returned
+    def add_card_you(self, new_card): #This is a method which adds the new card for the total of the user to be returned
+        self.new_card = new_card
         self.you_cards.append(str(self.new_card)) 
         if self.new_card == ('K' or 'Q' or 'J'):
             self.total += 10
         elif self.new_card == 'A':
             self.total += 11
             self.aces += 1
+        elif self.new_card in ('2', '3', '4', '5', '6', '7', '8', '9'):
+            self.total += int(self.new_card)
         elif self.total > 21 and self.aces > 0:
             self.total -= 10
             self.aces -= 1 
@@ -93,7 +96,7 @@ class DecisionTree: #This is a class to create the decision tree model for black
 
 def reset(): #This is a function to determine if the user wants to reset the game or not
     while True:
-        play_again = str(input('Would you like to stop playing? (y/n) ')).lower()
+        play_again = str(input('Would you like to continue playing? (y/n) ')).lower()
         if play_again == 'y':
             return True
         if play_again == 'n':
@@ -103,7 +106,7 @@ def reset(): #This is a function to determine if the user wants to reset the gam
 
 def stand_hit_decide():
     while True:
-        decide = str(input('Do you want to stand or hit? (s, h)'))
+        decide = str(input('Do you want to stand or hit? (s(stand), h(hit)) '))
         if decide.lower() == 's':
             return False   
         if decide.lower() == 'h':
@@ -117,25 +120,30 @@ modelling.decisions()
 modelling.train()
 modelling.visual_demonstration() #This is the accessing and utilisation of the class for the modelling
 
+
 aces = 0
 your_initial = str(input('Your initial card 1(Consider, K, Q, J as 10, and A as 11): '))
 dealer_initial = str(input('Dealer initial card 1: '))
-your_total = Cards(your_initial, dealer_initial).add_card_you()
+vals = Cards(your_initial, dealer_initial)
+your_total = vals.add_card_you(your_initial)
+dealer_total = vals.add_card_dealer()
 your_initial = str(input('Your initial card 2(Consider, K, Q, J as 10, and A as 11): '))
 dealer_initial = str(input('Dealer initial card 2: '))
-dealer_total = Cards(your_initial, dealer_initial).add_card_dealer()
+your_total = vals.add_card_you(your_initial)
+dealer_total = vals.add_card_dealer()
 risk = int(input('Risk (0, 1, 2): '))
 print(modelling.case_tests([{'you_total': your_total, 'dealer_initial': dealer_initial, 'risk': risk}]))
 tf = True
 while tf:
     add_total = str(input('Your new card(Consider K, Q, J, A): '))
-    your_total = Cards(add_total, dealer_initial).add_card_you()
-    all_cards = Cards(add_total, dealer_initial).return_cards()
+    your_total = vals.add_card_you(add_total)
+    all_cards = vals.return_cards()
+    print(all_cards, your_total)
     if your_total == 21:
         print('You won')
         print(all_cards)
     if your_total == False:
-        print('You lost a')
+        print('You lost')
         break    
     risk = int(input('Risk (0, 1, 2): '))
     stand_hit = modelling.case_tests([{'you_total': your_total, 'dealer_initial': dealer_initial, 'risk': risk}])
@@ -147,7 +155,7 @@ while tf:
         else:
             tf = False
             dealer = str(input('Dealer stand or hit? '))
-            if dealer.lower() == 'stand':
+            if dealer.lower() == 's':
                 dealer_final = int(input('What is the dealers final total: '))
                 if dealer_final < your_total:
                     print('You won')
